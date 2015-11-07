@@ -5,87 +5,100 @@
  */
 package com.mycompany.bankinterface.service;
 
+import com.mycompany.bankinterface.util.StringUtil;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author philb
  */
-@WebServlet(name = "ListUserData", urlPatterns = {"/ListUserData"})
-public class ListUserData extends HttpServlet {
+@WebServlet(name = "GetUserData", urlPatterns = {"/GetUserData"})
+public class GetUserData extends HttpServlet {
+
+    private static final Logger logger = LoggerFactory.getLogger(GetUserData.class);
+
+    private ServletContext servletContext;
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        servletContext = request.getServletContext();
+
         response.setContentType("application/json;charset=UTF-8");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+
         try (PrintWriter out = response.getWriter()) {
 
-            List<User> users = (List<User>) getServletContext().getAttribute("users");
-            
-            if (users == null) {
-                //logger.info("No users found in application context");
-                users = new ArrayList<>();
+            String userId = request.getParameter("userId");
+
+            if (StringUtil.isBlank(userId)) {
+                writeJsonError("Required parameter -->userId<-- not found", out);
+                return;
             }
-            
+
+            User user = getUserById(userId);
+
+            if (user == null) {
+                writeJsonError("User " + userId + " not found", out);
+                return;
+            }
+
             JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
-            for (User user : users) {
+
+            for (EidRecord eidRecord : user.getEidRecords()) {
                 jsonArrayBuilder.add(
                         Json.createObjectBuilder()
-                        .add("userId", user.getUserId())
-                        .add("name", user.getName())
+                        .add("eid", eidRecord.getEid())
+                        .add("dataType", eidRecord.getDataType())
+                        .add("data", eidRecord.getData())
                 );
             }
 
-            JsonArray userJsonArray = jsonArrayBuilder.build();
-            out.write(userJsonArray.toString());
-
-//            Enumeration<String> attributeNames = getServletContext().getAttributeNames();
-//            java.util.List<EidRecord> eidRecords = new ArrayList<>();
-//
-//            JSONObject jo = new JSONObject();
-//
-//            while (attributeNames.hasMoreElements()) {
-//                String name = attributeNames.nextElement();
-//
-//                if (!name.startsWith("eid")) {
-//                    continue;
-//                }
-//
-//                EidRecord eidRecord = (EidRecord) getServletContext().getAttribute(name);
-//                eidRecords.add(eidRecord);
-//
-//                jo.put(eidRecord.getDataType(),
-//                        Json.createObjectBuilder()
-//                        .add("eid", eidRecord.getEid())
-//                        .add("data", eidRecord.getData())
-//                );
-//        }
-//            JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
-//            for (EidRecord eidRecord : eidRecords) {
-//                jsonArrayBuilder.add(
-//                        Json.createObjectBuilder()
-//                        .add("eid", eidRecord.getEid())
-//                        .add("dataType", eidRecord.getDataType())
-//                        .add("data", eidRecord.getData())
-//                );
-//            }
-//
-//            JsonArray ediRecordsJson = jsonArrayBuilder.build();//
-            //
-            //
+            JsonArray ediRecordsJson = jsonArrayBuilder.build();
+            out.write(ediRecordsJson.toString());
         }
     }
 
-// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    private User getUserById(String userId) {
+
+        List<User> users = (List<User>) getServletContext().getAttribute("users");
+
+        if (users == null) {
+            return null;
+        }
+
+        for (User user : users) {
+            if (user.getUserId().equals(userId)) {
+                return user;
+            }
+        }
+
+        return null;
+    }
+
+    private void writeJsonError(String message, PrintWriter pw) {
+        JSONObject jo = new JSONObject();
+        jo.put("status", ServiceResponseStatus.Error);
+        jo.put("message", message);
+        pw.write(jo.toString());
+
+        logger.error("Returning error -->" + message + "<--");
+    }
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
