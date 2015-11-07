@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -18,23 +17,24 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.json.JSONObject;
 
 /**
  *
  * @author philb
  */
-@WebServlet(name = "ListEid", urlPatterns = {"/ListEid"})
-public class ListEid extends HttpServlet {
+@WebServlet(name = "List", urlPatterns = {"/List"})
+public class List extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json;charset=UTF-8");
-        response.setHeader("Access-Control-Allow-Origin", "*");
-
         try (PrintWriter out = response.getWriter()) {
 
             Enumeration<String> attributeNames = getServletContext().getAttributeNames();
-            List<EidRecord> eidRecords = new ArrayList<EidRecord>();
+            java.util.List<EidRecord> eidRecords = new ArrayList<EidRecord>();
 
+            JSONObject jo = new JSONObject();
+            
             while (attributeNames.hasMoreElements()) {
                 String name = attributeNames.nextElement();
 
@@ -45,8 +45,11 @@ public class ListEid extends HttpServlet {
                 EidRecord eidRecord = (EidRecord) getServletContext().getAttribute(name);
                 eidRecords.add(eidRecord);
 
+               // jo.put(eidRecord.getDataType(), null)
             }
 
+            
+            
             JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
             for (EidRecord eidRecord : eidRecords) {
                 jsonArrayBuilder.add(
