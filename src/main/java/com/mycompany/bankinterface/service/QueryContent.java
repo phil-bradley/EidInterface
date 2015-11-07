@@ -5,7 +5,6 @@
  */
 package com.mycompany.bankinterface.service;
 
-import com.mycompany.bankinterface.crypto.Signer;
 import com.mycompany.bankinterface.util.StringUtil;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -22,51 +21,33 @@ import org.slf4j.LoggerFactory;
  *
  * @author philb
  */
-@WebServlet(name = "PostVerifiedContent", urlPatterns = {"/PostVerifiedContent"})
-public class PostVerifiedContent extends HttpServlet {
+@WebServlet(name = "QueryContent", urlPatterns = {"/QueryContent"})
+public class QueryContent extends HttpServlet {
 
     private static final Logger logger = LoggerFactory.getLogger(PostVerifiedContent.class);
-    
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
+
         response.setContentType("application/json;charset=UTF-8");
 
         try (PrintWriter out = response.getWriter()) {
+            String data = request.getParameter("data");
+            String eid = request.getParameter("eid");
 
-            try {
-                String data = request.getParameter("data");
-                String subjectPublicKey = request.getParameter("subjectPublicKey");
-
-                if (StringUtil.isBlank(data)) {
-                    writeJsonError("Required parameter -->data<-- not found", out);
-                    return;
-                }
-
-                if (StringUtil.isBlank(subjectPublicKey)) {
-                    writeJsonError("Required parameter -->subjectPublicKey<-- not found", out);
-                    return;
-                }
-
-                Signer signer = (Signer) getServletContext().getAttribute("signer");
-                String signature = signer.sign(data);
-
-                ServiceResponse sr = new ServiceResponse(ServiceResponseStatus.Ok);
-                sr.setRecordId("NO_RECORD_ID");
-                sr.setSignature(signature);
-                sr.setVerifierPublicKey(signer.getPublicKey());
-
-                JSONObject jo = new JSONObject();
-                jo.put("status", ServiceResponseStatus.Ok);
-                jo.put("recordId", sr.getRecordId());
-                jo.put("signature", sr.getSignature());
-                jo.put("verifierPublicKey", sr.getVerifierPublicKey());
-
-                out.write(jo.toString());
-
-            } catch (Exception ex) {
-                writeJsonError(ex.getMessage(), out);
+            if (StringUtil.isBlank(data)) {
+                writeJsonError("Required parameter -->data<-- not found", out);
+                return;
             }
+
+            if (StringUtil.isBlank(eid)) {
+                writeJsonError("Required parameter -->eid<-- not found", out);
+                return;
+            }
+            
+            EidRecord eidRecord = new EidProvider().getFakeEidRecord(eid);
+            
+            
+            
         }
 
     }
@@ -80,7 +61,7 @@ public class PostVerifiedContent extends HttpServlet {
         logger.error("Returning error -->" + message + "<--");
     }
 
-// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
