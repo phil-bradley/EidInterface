@@ -8,6 +8,8 @@ package com.mycompany.bankinterface.service;
 import com.mycompany.bankinterface.crypto.Signer;
 import com.mycompany.bankinterface.crypto.SignerException;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -45,7 +47,37 @@ public class AppInitialiser implements ServletContextListener {
             logger.error("Failed to create signer", sx);
         }
 
+        initTestData();
+        
         logger.info("Application initialised");
+    }
+
+    private void initTestData() {
+
+        User user1 = new User("0001", "Bob");
+        User user2 = new User("0002", "Fred");
+        User user3 = new User("0003", "Jack");
+        User user4 = new User("0004", "Tim");
+
+        EidRecord phoneRecord = new EidRecord();
+        phoneRecord.setData("+353 123456");
+        phoneRecord.setDataType("PHONE");
+
+        EidRecord passportRecord = new EidRecord();
+        passportRecord.setData("PA123456");
+        passportRecord.setDataType("PASSPORT");
+
+        user1.getEidRecords().add(phoneRecord);
+        user1.getEidRecords().add(passportRecord);
+
+        List<User> users = new ArrayList<>();
+
+        users.add(user1);
+        users.add(user2);
+        users.add(user3);
+        users.add(user4);
+
+        servletContext.setAttribute("users", users);
     }
 
     @Override

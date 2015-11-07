@@ -17,6 +17,7 @@ public class EidRecord {
     private String subjectPublicKey;
     private String dataType;
     private String data;
+    
 
     public String getData() {
         return data;
