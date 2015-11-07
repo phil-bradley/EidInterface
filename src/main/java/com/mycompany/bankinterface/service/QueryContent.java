@@ -9,6 +9,7 @@ import com.mycompany.bankinterface.crypto.Signer;
 import com.mycompany.bankinterface.util.StringUtil;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -47,7 +48,16 @@ public class QueryContent extends HttpServlet {
             }
 
             try {
-                EidRecord eidRecord = (EidRecord) getServletContext().getAttribute("eid-" + eid);
+                Map<String, User> users = (Map<String, User>) getServletContext().getAttribute("users");
+                EidRecord eidRecord = null;
+                
+                for (User user : users.values()) {
+                    for (EidRecord e : user.getEidRecords()) {
+                        if (e.getEid().equals(eid)) {
+                            eidRecord = e;
+                        }
+                    }
+                }
 
                 if (eidRecord == null) {
                     writeJsonError("EID " + eid + " not found", out);
