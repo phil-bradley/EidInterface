@@ -57,19 +57,30 @@ public class GetUserData extends HttpServlet {
                 return;
             }
 
-            JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+            /*
+             JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
 
+             for (EidRecord eidRecord : user.getEidRecords()) {
+             jsonArrayBuilder.add(
+             Json.createObjectBuilder()
+             .add("eid", eidRecord.getEid())
+             .add("dataType", eidRecord.getDataType())
+             .add("data", eidRecord.getData())
+             );
+             }
+
+             JsonArray ediRecordsJson = jsonArrayBuilder.build();
+             */
+            JSONObject hash = new JSONObject();
+            
             for (EidRecord eidRecord : user.getEidRecords()) {
-                jsonArrayBuilder.add(
-                        Json.createObjectBuilder()
-                        .add("eid", eidRecord.getEid())
-                        .add("dataType", eidRecord.getDataType())
-                        .add("data", eidRecord.getData())
-                );
+                JSONObject jo = new JSONObject();
+                jo.put("data", eidRecord.getData());
+                jo.put("eid", eidRecord.getEid());            
+                hash.put(eidRecord.getDataType(), jo);
             }
 
-            JsonArray ediRecordsJson = jsonArrayBuilder.build();
-            out.write(ediRecordsJson.toString());
+            out.write(hash.toString());
         }
     }
 
