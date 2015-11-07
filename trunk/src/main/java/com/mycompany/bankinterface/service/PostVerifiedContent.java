@@ -30,6 +30,7 @@ public class PostVerifiedContent extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         response.setContentType("application/json;charset=UTF-8");
+        response.setHeader("Access-Control-Allow-Origin", "*");
 
         try (PrintWriter out = response.getWriter()) {
 
@@ -52,9 +53,8 @@ public class PostVerifiedContent extends HttpServlet {
                     writeJsonError("Required parameter -->dataType<-- not found", out);
                     return;
                 }
-                
+
                 logger.info("Got data -->" + data + "<-- of type -->" + dataType + "<--");
-                
 
                 Signer signer = (Signer) getServletContext().getAttribute("signer");
 

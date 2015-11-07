@@ -34,7 +34,7 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20150729</version>
+            <version>20131018</version>
         </dependency>
         <dependency>
             <groupId>javax</groupId>

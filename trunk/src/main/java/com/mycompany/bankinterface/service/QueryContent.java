@@ -30,6 +30,7 @@ public class QueryContent extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         response.setContentType("application/json;charset=UTF-8");
+        response.setHeader("Access-Control-Allow-Origin", "*");
 
         try (PrintWriter out = response.getWriter()) {
             String data = request.getParameter("data");
@@ -55,7 +56,7 @@ public class QueryContent extends HttpServlet {
 
                 Signer signer = (Signer) getServletContext().getAttribute("signer");
                 boolean isVerified = signer.isVerified(data, eidRecord.getSignature(), eidRecord.getVerifierPublicKey());
-                
+
                 JSONObject jo = new JSONObject();
                 jo.put("status", ServiceResponseStatus.Ok);
                 jo.put("isVerified", isVerified);
@@ -63,7 +64,7 @@ public class QueryContent extends HttpServlet {
                 jo.put("signerPublicKey", eidRecord.getVerifierPublicKey());
                 jo.put("subjectPublicKey", eidRecord.getSubjectPublicKey());
                 jo.put("dataType", eidRecord.getDataType());
-                
+
                 out.write(jo.toString());
 
             } catch (Exception ex) {
