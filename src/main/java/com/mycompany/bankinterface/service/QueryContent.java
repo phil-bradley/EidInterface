@@ -46,7 +46,7 @@ public class QueryContent extends HttpServlet {
             }
 
             try {
-                EidRecord eidRecord = (EidRecord) getServletContext().getAttribute(eid);
+                EidRecord eidRecord = (EidRecord) getServletContext().getAttribute("eid-" + eid);
 
                 if (eidRecord == null) {
                     writeJsonError("EID " + eid + " not found", out);
@@ -62,6 +62,7 @@ public class QueryContent extends HttpServlet {
                 jo.put("signature", eidRecord.getSignature());
                 jo.put("signerPublicKey", eidRecord.getVerifierPublicKey());
                 jo.put("subjectPublicKey", eidRecord.getSubjectPublicKey());
+                jo.put("dataType", eidRecord.getDataType());
                 
                 out.write(jo.toString());
 

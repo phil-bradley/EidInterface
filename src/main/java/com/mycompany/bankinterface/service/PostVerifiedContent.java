@@ -35,6 +35,7 @@ public class PostVerifiedContent extends HttpServlet {
 
             try {
                 String data = request.getParameter("data");
+                String dataType = request.getParameter("dataType");
                 String subjectPublicKey = request.getParameter("subjectPublicKey");
 
                 if (StringUtil.isBlank(data)) {
@@ -47,7 +48,21 @@ public class PostVerifiedContent extends HttpServlet {
                     return;
                 }
 
+                if (StringUtil.isBlank(dataType)) {
+                    writeJsonError("Required parameter -->dataType<-- not found", out);
+                    return;
+                }
+                
+                logger.info("Got data -->" + data + "<-- of type -->" + dataType + "<--");
+                
+
                 Signer signer = (Signer) getServletContext().getAttribute("signer");
+
+                if (signer == null) {
+                    writeJsonError("Signer not found", out);
+                    return;
+                }
+
                 String signature = signer.sign(data);
 
                 String eid = StringUtil.randomAlphaNum(32);
@@ -57,7 +72,8 @@ public class PostVerifiedContent extends HttpServlet {
                 eidRecord.setSignature(signature);
                 eidRecord.setSubjectPublicKey(subjectPublicKey);
                 eidRecord.setVerifierPublicKey(signer.getPublicKey());
-
+                eidRecord.setDataType(dataType);
+                eidRecord.setData(data);
 
                 JSONObject jo = new JSONObject();
                 jo.put("status", ServiceResponseStatus.Ok);
@@ -66,12 +82,12 @@ public class PostVerifiedContent extends HttpServlet {
                 jo.put("verifierPublicKey", eidRecord.getVerifierPublicKey());
 
                 out.write(jo.toString());
-                
+
                 // Just for testing, store in the application context
-                getServletContext().setAttribute(eid, eidRecord);
+                getServletContext().setAttribute("eid-" + eid, eidRecord);
 
             } catch (Exception ex) {
-                writeJsonError(ex.getMessage(), out);
+                handleException(ex, out);
             }
         }
 
@@ -84,6 +100,11 @@ public class PostVerifiedContent extends HttpServlet {
         pw.write(jo.toString());
 
         logger.error("Returning error -->" + message + "<--");
+    }
+
+    private void handleException(Exception ex, PrintWriter pw) {
+        writeJsonError(ex.getMessage(), pw);
+        logger.error("Returning error -->" + ex.getMessage() + "<--", ex);
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -16,6 +16,7 @@
         <br/>
         <form method="post" action="PostVerifiedContent">
             <input type="text" name="data" id="data" placeholder="data"/><br/>
+            <input type="text" name="dataType" id="dataType" placeholder="dataType"/><br/>
             <textarea style="width: 400px; height: 80px;" name="subjectPublicKey" id="subjectPublicKey" placeholder="Subject Public Key"></textarea>
             <br/>
             <input type="submit" value="Go"/>
