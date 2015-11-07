@@ -52,21 +52,23 @@ public class PostVerifiedContent extends HttpServlet {
 
                 String eid = StringUtil.randomAlphaNum(32);
 
-                ServiceResponse sr = new ServiceResponse(ServiceResponseStatus.Ok);
-                sr.setEid(eid);
-                sr.setSignature(signature);
-                sr.setVerifierPublicKey(signer.getPublicKey());
+                EidRecord eidRecord = new EidRecord();
+                eidRecord.setEid(eid);
+                eidRecord.setSignature(signature);
+                eidRecord.setSubjectPublicKey(subjectPublicKey);
+                eidRecord.setVerifierPublicKey(signer.getPublicKey());
+
 
                 JSONObject jo = new JSONObject();
                 jo.put("status", ServiceResponseStatus.Ok);
-                jo.put("eid", sr.getEid());
+                jo.put("eid", eidRecord.getEid());
                 jo.put("signature", signature);
-                jo.put("verifierPublicKey", sr.getVerifierPublicKey());
+                jo.put("verifierPublicKey", eidRecord.getVerifierPublicKey());
 
                 out.write(jo.toString());
                 
                 // Just for testing, store in the application context
-                getServletContext().setAttribute(eid, sr);
+                getServletContext().setAttribute(eid, eidRecord);
 
             } catch (Exception ex) {
                 writeJsonError(ex.getMessage(), out);
