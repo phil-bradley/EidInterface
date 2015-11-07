@@ -8,8 +8,8 @@ package com.mycompany.bankinterface.service;
 import com.mycompany.bankinterface.crypto.Signer;
 import com.mycompany.bankinterface.crypto.SignerException;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -62,7 +62,8 @@ public class AppInitialiser implements ServletContextListener {
         EidRecord phoneRecord = new EidRecord();
         phoneRecord.setData("+353 123456");
         phoneRecord.setDataType("PHONE");
-
+        phoneRecord.setEid("ABCD1234WXYZ");
+        
         EidRecord passportRecord = new EidRecord();
         passportRecord.setData("PA123456");
         passportRecord.setDataType("PASSPORT");
@@ -70,12 +71,12 @@ public class AppInitialiser implements ServletContextListener {
         user1.getEidRecords().add(phoneRecord);
         user1.getEidRecords().add(passportRecord);
 
-        List<User> users = new ArrayList<>();
+        Map<String, User> users = new HashMap<>();
 
-        users.add(user1);
-        users.add(user2);
-        users.add(user3);
-        users.add(user4);
+        users.put(user1.getUserId(), user1);
+        users.put(user2.getUserId(), user2);
+        users.put(user3.getUserId(), user3);
+        users.put(user4.getUserId(), user4);
 
         servletContext.setAttribute("users", users);
     }

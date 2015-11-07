@@ -11,13 +11,12 @@ package com.mycompany.bankinterface.service;
  */
 public class EidRecord {
 
-    private String eid;
-    private String signature;
-    private String verifierPublicKey;
-    private String subjectPublicKey;
-    private String dataType;
-    private String data;
-    
+    private String eid = "";
+    private String signature = "";
+    private String verifierPublicKey = "";
+    private String subjectPublicKey = "";
+    private String dataType = "";
+    private String data = "";
 
     public String getData() {
         return data;

@@ -7,8 +7,8 @@ package com.mycompany.bankinterface.service;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -29,15 +29,15 @@ public class ListUsers extends HttpServlet {
         response.setContentType("application/json;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
 
-            List<User> users = (List<User>) getServletContext().getAttribute("users");
-            
+            Map<String, User> users = (Map<String, User>) getServletContext().getAttribute("users");
+
             if (users == null) {
                 //logger.info("No users found in application context");
-                users = new ArrayList<>();
+                users = new HashMap<>();
             }
-            
+
             JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
-            for (User user : users) {
+            for (User user : users.values()) {
                 jsonArrayBuilder.add(
                         Json.createObjectBuilder()
                         .add("userId", user.getUserId())
