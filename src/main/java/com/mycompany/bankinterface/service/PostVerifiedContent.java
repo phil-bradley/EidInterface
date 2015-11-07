@@ -26,10 +26,9 @@ import org.slf4j.LoggerFactory;
 public class PostVerifiedContent extends HttpServlet {
 
     private static final Logger logger = LoggerFactory.getLogger(PostVerifiedContent.class);
-    
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
+
         response.setContentType("application/json;charset=UTF-8");
 
         try (PrintWriter out = response.getWriter()) {
@@ -51,18 +50,23 @@ public class PostVerifiedContent extends HttpServlet {
                 Signer signer = (Signer) getServletContext().getAttribute("signer");
                 String signature = signer.sign(data);
 
+                String eid = StringUtil.randomAlphaNum(32);
+
                 ServiceResponse sr = new ServiceResponse(ServiceResponseStatus.Ok);
-                sr.setRecordId("NO_RECORD_ID");
+                sr.setEid(eid);
                 sr.setSignature(signature);
                 sr.setVerifierPublicKey(signer.getPublicKey());
 
                 JSONObject jo = new JSONObject();
                 jo.put("status", ServiceResponseStatus.Ok);
-                jo.put("recordId", sr.getRecordId());
-                jo.put("signature", sr.getSignature());
+                jo.put("eid", sr.getEid());
+                jo.put("signature", signature);
                 jo.put("verifierPublicKey", sr.getVerifierPublicKey());
 
                 out.write(jo.toString());
+                
+                // Just for testing, store in the application context
+                getServletContext().setAttribute(eid, sr);
 
             } catch (Exception ex) {
                 writeJsonError(ex.getMessage(), out);

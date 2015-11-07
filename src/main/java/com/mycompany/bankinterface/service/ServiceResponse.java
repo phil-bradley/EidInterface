@@ -13,7 +13,7 @@ public class ServiceResponse {
 
     private ServiceResponseStatus status;
     private String message = "";
-    private String recordId = "";
+    private String eid = "";
     private String signature = "";
     private String verifierPublicKey = "";
 
@@ -42,12 +42,12 @@ public class ServiceResponse {
         this.status = status;
     }
 
-    public String getRecordId() {
-        return recordId;
+    public String getEid() {
+        return eid;
     }
 
-    public void setRecordId(String recordId) {
-        this.recordId = recordId;
+    public void setEid(String eid) {
+        this.eid = eid;
     }
 
     public String getSignature() {

@@ -5,6 +5,7 @@
  */
 package com.mycompany.bankinterface.service;
 
+import com.mycompany.bankinterface.crypto.Signer;
 import com.mycompany.bankinterface.util.StringUtil;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -45,14 +46,23 @@ public class QueryContent extends HttpServlet {
             }
 
             try {
-                EidRecord eidRecord = new EidProvider().getFakeEidRecord(eid);
+                EidRecord eidRecord = (EidRecord) getServletContext().getAttribute(eid);
 
+                if (eidRecord == null) {
+                    writeJsonError("EID " + eid + " not found", out);
+                    return;
+                }
+
+                Signer signer = (Signer) getServletContext().getAttribute("signer");
+                boolean isVerified = signer.isVerified(data, eidRecord.getSignature(), eidRecord.getVerifierPublicKey());
+                
                 JSONObject jo = new JSONObject();
                 jo.put("status", ServiceResponseStatus.Ok);
+                jo.put("isVerified", isVerified);
                 jo.put("signature", eidRecord.getSignature());
                 jo.put("signerPublicKey", eidRecord.getVerifierPublicKey());
                 jo.put("subjectPublicKey", eidRecord.getSubjectPublicKey());
-
+                
                 out.write(jo.toString());
 
             } catch (Exception ex) {
