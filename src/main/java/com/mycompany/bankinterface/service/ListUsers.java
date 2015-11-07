@@ -26,7 +26,10 @@ import javax.servlet.http.HttpServletResponse;
 public class ListUsers extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
         response.setContentType("application/json;charset=UTF-8");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+
         try (PrintWriter out = response.getWriter()) {
 
             Map<String, User> users = (Map<String, User>) getServletContext().getAttribute("users");
