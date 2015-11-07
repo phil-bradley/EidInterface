@@ -33,7 +33,7 @@ public class AppInitialiser implements ServletContextListener {
 
         String alias = "philipbradleydsa";
         String password = "password";
-        String keyStorePath = "/home/philb/mykeystore.jks";
+        String keyStorePath = "/tmp/mykeystore.jks";
 
         try {
             File keyStoreFile = new File(keyStorePath);

@@ -15,6 +15,16 @@ public class EidRecord {
     private String signature;
     private String verifierPublicKey;
     private String subjectPublicKey;
+    private String dataType;
+    private String data;
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
 
     public String getSubjectPublicKey() {
         return subjectPublicKey;
@@ -46,6 +56,14 @@ public class EidRecord {
 
     public void setVerifierPublicKey(String verifierPublicKey) {
         this.verifierPublicKey = verifierPublicKey;
+    }
+
+    public String getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
     }
 
 }
