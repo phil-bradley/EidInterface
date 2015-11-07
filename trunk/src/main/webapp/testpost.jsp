@@ -15,9 +15,8 @@
         Test sending verified content<br/>
         <br/>
         <form method="post" action="PostVerifiedContent">
-            <input type="text" name="data" id="data"/><br/>
-            <textarea style="width: 400px; height: 80px;" name="subjectPublicKey" id="subjectPublicKey">
-            </textarea>
+            <input type="text" name="data" id="data" placeholder="data"/><br/>
+            <textarea style="width: 400px; height: 80px;" name="subjectPublicKey" id="subjectPublicKey" placeholder="Subject Public Key"></textarea>
             <br/>
             <input type="submit" value="Go"/>
         </form>

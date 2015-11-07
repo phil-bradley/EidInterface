@@ -15,8 +15,8 @@
         Test sending verified content<br/>
         <br/>
         <form method="post" action="QueryContent">
-            <input type="text" name="data" id="data"/><br/>
-            <input type="text" name="eid" id="eid"/><br/>
+            <input type="text" name="data" id="data" placeholder="dataToVerify"/><br/>
+            <input type="text" name="eid" id="eid" placeholder="EID"/><br/>
             <br/>
             <input type="submit" value="Go"/>
         </form>
