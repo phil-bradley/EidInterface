@@ -9,6 +9,7 @@ import com.mycompany.bankinterface.util.StringUtil;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Map;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -74,19 +75,13 @@ public class GetUserData extends HttpServlet {
 
     private User getUserById(String userId) {
 
-        List<User> users = (List<User>) getServletContext().getAttribute("users");
+        Map<String, User> users = (Map<String, User>) getServletContext().getAttribute("users");
 
         if (users == null) {
             return null;
         }
 
-        for (User user : users) {
-            if (user.getUserId().equals(userId)) {
-                return user;
-            }
-        }
-
-        return null;
+        return users.get(userId);
     }
 
     private void writeJsonError(String message, PrintWriter pw) {

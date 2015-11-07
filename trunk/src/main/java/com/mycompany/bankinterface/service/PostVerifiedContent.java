@@ -9,6 +9,9 @@ import com.mycompany.bankinterface.crypto.Signer;
 import com.mycompany.bankinterface.util.StringUtil;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -38,6 +41,7 @@ public class PostVerifiedContent extends HttpServlet {
                 String data = request.getParameter("data");
                 String dataType = request.getParameter("dataType");
                 String subjectPublicKey = request.getParameter("subjectPublicKey");
+                String userId = request.getParameter("userId");
 
                 if (StringUtil.isBlank(data)) {
                     writeJsonError("Required parameter -->data<-- not found", out);
@@ -54,6 +58,28 @@ public class PostVerifiedContent extends HttpServlet {
                     return;
                 }
 
+                if (StringUtil.isBlank(userId)) {
+                    writeJsonError("Required parameter -->userId<-- not found", out);
+                    return;
+
+                }
+
+                User user = getUserById(userId);
+
+                if (user == null) {
+                    writeJsonError("User " + userId + " not found", out);
+                    return;
+                }
+
+                EidRecord eidRecord = new EidRecord();
+
+                for (EidRecord r : user.getEidRecords()) {
+                    if (r.getDataType().equals(dataType) && r.getData().equals(data)) {
+                        eidRecord = r;
+                        break;
+                    }
+                }
+
                 logger.info("Got data -->" + data + "<-- of type -->" + dataType + "<--");
 
                 Signer signer = (Signer) getServletContext().getAttribute("signer");
@@ -67,13 +93,14 @@ public class PostVerifiedContent extends HttpServlet {
 
                 String eid = StringUtil.randomAlphaNum(32);
 
-                EidRecord eidRecord = new EidRecord();
                 eidRecord.setEid(eid);
                 eidRecord.setSignature(signature);
                 eidRecord.setSubjectPublicKey(subjectPublicKey);
                 eidRecord.setVerifierPublicKey(signer.getPublicKey());
                 eidRecord.setDataType(dataType);
                 eidRecord.setData(data);
+
+                saveUser(user);
 
                 JSONObject jo = new JSONObject();
                 jo.put("status", ServiceResponseStatus.Ok);
@@ -84,13 +111,34 @@ public class PostVerifiedContent extends HttpServlet {
                 out.write(jo.toString());
 
                 // Just for testing, store in the application context
-                getServletContext().setAttribute("eid-" + eid, eidRecord);
-
+                //getServletContext().setAttribute("eid-" + eid, eidRecord);
             } catch (Exception ex) {
                 handleException(ex, out);
             }
         }
 
+    }
+
+    private void saveUser(User user) {
+
+        Map<String, User> users = (Map<String, User>) getServletContext().getAttribute("users");
+
+        if (users == null) {
+            users = new HashMap<>();
+        }
+
+        users.put(user.getUserId(), user);
+    }
+
+    private User getUserById(String userId) {
+
+        Map<String, User> users = (Map<String, User>) getServletContext().getAttribute("users");
+
+        if (users == null) {
+            return null;
+        }
+
+        return users.get(userId);
     }
 
     private void writeJsonError(String message, PrintWriter pw) {
