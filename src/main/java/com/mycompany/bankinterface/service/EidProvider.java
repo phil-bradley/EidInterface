@@ -22,7 +22,7 @@ public class EidProvider {
     public EidRecord getFakeEidRecord(String eid) {
         EidRecord eidRecord = new EidRecord();
         eidRecord.setEid("ABCDEFGHIJKLMNOP");
-        eidRecord.setSignedData("sdjfksdfkghdfgkldfgdfg");
+        eidRecord.setSignature("sdjfksdfkghdfgkldfgdfg");
         eidRecord.setVerifierPublicKey("m,nvkbnklosdfhsdfsdfla;lkasdasdfkjsdf");
         
         return eidRecord;

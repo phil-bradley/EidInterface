@@ -43,11 +43,22 @@ public class QueryContent extends HttpServlet {
                 writeJsonError("Required parameter -->eid<-- not found", out);
                 return;
             }
-            
-            EidRecord eidRecord = new EidProvider().getFakeEidRecord(eid);
-            
-            
-            
+
+            try {
+                EidRecord eidRecord = new EidProvider().getFakeEidRecord(eid);
+
+                JSONObject jo = new JSONObject();
+                jo.put("status", ServiceResponseStatus.Ok);
+                jo.put("signature", eidRecord.getSignature());
+                jo.put("signerPublicKey", eidRecord.getVerifierPublicKey());
+                jo.put("subjectPublicKey", eidRecord.getSubjectPublicKey());
+
+                out.write(jo.toString());
+
+            } catch (Exception ex) {
+                writeJsonError(ex.getMessage(), out);
+            }
+
         }
 
     }

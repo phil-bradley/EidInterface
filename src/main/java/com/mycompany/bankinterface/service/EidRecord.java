@@ -12,8 +12,17 @@ package com.mycompany.bankinterface.service;
 public class EidRecord {
 
     private String eid;
-    private String signedData;
+    private String signature;
     private String verifierPublicKey;
+    private String subjectPublicKey;
+
+    public String getSubjectPublicKey() {
+        return subjectPublicKey;
+    }
+
+    public void setSubjectPublicKey(String subjectPublicKey) {
+        this.subjectPublicKey = subjectPublicKey;
+    }
 
     public String getEid() {
         return eid;
@@ -23,12 +32,12 @@ public class EidRecord {
         this.eid = eid;
     }
 
-    public String getSignedData() {
-        return signedData;
+    public String getSignature() {
+        return signature;
     }
 
-    public void setSignedData(String signedData) {
-        this.signedData = signedData;
+    public void setSignature(String signature) {
+        this.signature = signature;
     }
 
     public String getVerifierPublicKey() {
