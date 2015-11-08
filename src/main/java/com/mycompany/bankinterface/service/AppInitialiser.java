@@ -117,6 +117,9 @@ public class AppInitialiser implements ServletContextListener {
         users.put(user4.getUserId(), user4);
 
         servletContext.setAttribute("users", users);
+        
+        
+        
         servletContext.setAttribute("defaultUsers", users);
     }
 

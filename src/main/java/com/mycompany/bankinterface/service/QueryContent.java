@@ -32,9 +32,7 @@ public class QueryContent extends HttpServlet {
 
         response.setContentType("application/json;charset=UTF-8");
         response.setHeader("Access-Control-Allow-Origin", "*");
-
-        response.setContentType("application/json;charset=UTF-8");
-        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST");
 
         try (PrintWriter out = response.getWriter()) {
             String data = request.getParameter("data");

@@ -6,6 +6,8 @@
 package com.mycompany.bankinterface.service;
 
 import com.mycompany.bankinterface.crypto.Signer;
+import com.mycompany.bankinterface.eth.EidProvider;
+import com.mycompany.bankinterface.eth.EthereumEidProvider;
 import com.mycompany.bankinterface.util.StringUtil;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -91,14 +93,15 @@ public class PostVerifiedContent extends HttpServlet {
 
                 String signature = signer.sign(data);
 
-                String eid = StringUtil.randomAlphaNum(32);
-
-                eidRecord.setEid(eid);
                 eidRecord.setSignature(signature);
                 eidRecord.setSubjectPublicKey(subjectPublicKey);
                 eidRecord.setVerifierPublicKey(signer.getPublicKey());
                 eidRecord.setDataType(dataType);
                 eidRecord.setData(data);
+
+                EidProvider eidProvider = new EthereumEidProvider();
+                String eid = eidProvider.postEidRecord(eidRecord);
+                eidRecord.setEid(eid);
 
                 saveUser(user);
 
