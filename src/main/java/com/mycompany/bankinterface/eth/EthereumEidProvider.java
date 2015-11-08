@@ -16,6 +16,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -35,10 +36,12 @@ public class EthereumEidProvider implements EidProvider {
             JSONObject responseJo = new JSONObject(response);
             JSONObject dataJo = (JSONObject) responseJo.get("data");
 
+            JSONObject data2Jo = (JSONObject) dataJo.get("data");
+
             EidRecord responseRecord = new EidRecord();
             responseRecord.setEid(eid);
-            responseRecord.setSignature(dataJo.getString("signature"));
-            responseRecord.setVerifierPublicKey(dataJo.getString("verifier_pk"));
+            responseRecord.setSignature(data2Jo.getString("signature"));
+            responseRecord.setVerifierPublicKey(data2Jo.getString("verifier_pk"));
 
             return responseRecord;
         } catch (IOException x) {
@@ -52,8 +55,13 @@ public class EthereumEidProvider implements EidProvider {
 
         try {
             String response = postJsonMessage(jo);
-            return response;
-        } catch (Exception ex) {
+
+            JSONObject responseJo = new JSONObject(response);
+            //JSONObject dataJo = (JSONObject) responseJo.get("data");
+            String eid = responseJo.getString("data");
+
+            return eid;
+        } catch (IOException | JSONException ex) {
             throw new EidException("Failed to post request", ex);
         }
     }
