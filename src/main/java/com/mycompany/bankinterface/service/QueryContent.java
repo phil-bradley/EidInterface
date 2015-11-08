@@ -26,9 +26,12 @@ import org.slf4j.LoggerFactory;
 @WebServlet(name = "QueryContent", urlPatterns = {"/QueryContent"})
 public class QueryContent extends HttpServlet {
 
-    private static final Logger logger = LoggerFactory.getLogger(PostVerifiedContent.class);
+    private static final Logger logger = LoggerFactory.getLogger(QueryContent.class);
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        response.setContentType("application/json;charset=UTF-8");
+        response.setHeader("Access-Control-Allow-Origin", "*");
 
         response.setContentType("application/json;charset=UTF-8");
         response.setHeader("Access-Control-Allow-Origin", "*");
@@ -50,7 +53,7 @@ public class QueryContent extends HttpServlet {
             try {
                 Map<String, User> users = (Map<String, User>) getServletContext().getAttribute("users");
                 EidRecord eidRecord = null;
-                
+
                 for (User user : users.values()) {
                     for (EidRecord e : user.getEidRecords()) {
                         if (e.getEid().equals(eid)) {
@@ -64,8 +67,13 @@ public class QueryContent extends HttpServlet {
                     return;
                 }
 
-                Signer signer = (Signer) getServletContext().getAttribute("signer");
-                boolean isVerified = signer.isVerified(data, eidRecord.getSignature(), eidRecord.getVerifierPublicKey());
+                boolean isVerified = false;
+
+                if (StringUtil.hasValue(eidRecord.getVerifierPublicKey())) {
+                    logger.info("Checking signed data with public key " + eidRecord.getVerifierPublicKey());
+                    Signer signer = (Signer) getServletContext().getAttribute("signer");
+                    isVerified = signer.isVerified(data, eidRecord.getSignature(), eidRecord.getVerifierPublicKey());
+                }
 
                 JSONObject jo = new JSONObject();
                 jo.put("status", ServiceResponseStatus.Ok);
@@ -78,7 +86,7 @@ public class QueryContent extends HttpServlet {
                 out.write(jo.toString());
 
             } catch (Exception ex) {
-                writeJsonError(ex.getMessage(), out);
+                handleException(ex, out);
             }
 
         }
@@ -92,6 +100,11 @@ public class QueryContent extends HttpServlet {
         pw.write(jo.toString());
 
         logger.error("Returning error -->" + message + "<--");
+    }
+
+    private void handleException(Exception ex, PrintWriter pw) {
+        writeJsonError(ex.getMessage(), pw);
+        logger.error("Returning error -->" + ex.getMessage() + "<--", ex);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

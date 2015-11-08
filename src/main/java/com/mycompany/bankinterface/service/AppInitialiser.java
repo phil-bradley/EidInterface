@@ -27,6 +27,7 @@ public class AppInitialiser implements ServletContextListener {
     public static final Logger logger = LoggerFactory.getLogger(AppInitialiser.class);
 
     private ServletContext servletContext;
+    private Signer signer;
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
@@ -41,18 +42,21 @@ public class AppInitialiser implements ServletContextListener {
             File keyStoreFile = new File(keyStorePath);
 
             logger.info("Creating signer");
-            Signer signer = new Signer(keyStoreFile, alias, password);
+            signer = new Signer(keyStoreFile, alias, password);
             servletContext.setAttribute("signer", signer);
         } catch (SignerException sx) {
             logger.error("Failed to create signer", sx);
         }
 
-        initTestData();
-
+        try {
+            initTestData();
+        } catch (SignerException sx) {
+            logger.error("Failed to initialise test data", sx);
+        }
         logger.info("Application initialised");
     }
 
-    private void initTestData() {
+    private void initTestData() throws SignerException {
 
         User user1 = new User("0001", "Erikos");
         User user2 = new User("0002", "Fred");
@@ -63,18 +67,25 @@ public class AppInitialiser implements ServletContextListener {
         fnameRecord.setData("Erikos");
         fnameRecord.setDataType("FIRSTNAME");
         fnameRecord.setEid("HSKE23445JLLM993");
+        fnameRecord.setVerifierPublicKey(signer.getPublicKey());
+        fnameRecord.setSignature(signer.sign(fnameRecord.getData()));
         user1.getEidRecords().add(fnameRecord);
 
         EidRecord lnameRecord = new EidRecord();
         lnameRecord.setData("Alkalai");
         lnameRecord.setDataType("LASTNAME");
         lnameRecord.setEid("BV73945454DSAA");
+        lnameRecord.setVerifierPublicKey(signer.getPublicKey());
+        lnameRecord.setSignature(signer.sign(lnameRecord.getData()));
         user1.getEidRecords().add(lnameRecord);
 
         EidRecord passportRecord = new EidRecord();
         passportRecord.setData("XX575245");
         passportRecord.setDataType("PASSPORT");
         passportRecord.setEid("YTENVP3424222XZW");
+        passportRecord.setSignature(signer.sign(passportRecord.getData()));
+        passportRecord.setVerifierPublicKey(signer.getPublicKey());
+
         user1.getEidRecords().add(passportRecord);
 
         EidRecord drivingRecord = new EidRecord();
@@ -93,6 +104,9 @@ public class AppInitialiser implements ServletContextListener {
         dobRecord.setData("23-05-1985");
         dobRecord.setDataType("DATEOFBIRTH");
         dobRecord.setEid("PODRNVJ82345665FG");
+        dobRecord.setVerifierPublicKey(signer.getPublicKey());
+        dobRecord.setSignature(signer.sign(dobRecord.getData()));
+
         user1.getEidRecords().add(dobRecord);
 
         Map<String, User> users = new HashMap<>();

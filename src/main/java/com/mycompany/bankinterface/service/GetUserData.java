@@ -8,11 +8,7 @@ package com.mycompany.bankinterface.service;
 import com.mycompany.bankinterface.util.StringUtil;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import java.util.Map;
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -76,7 +72,9 @@ public class GetUserData extends HttpServlet {
             for (EidRecord eidRecord : user.getEidRecords()) {
                 JSONObject jo = new JSONObject();
                 jo.put("data", eidRecord.getData());
-                jo.put("eid", eidRecord.getEid());            
+                jo.put("eid", eidRecord.getEid());           
+                jo.put("signature", eidRecord.getSignature());    
+                jo.put("verifierPubKey", eidRecord.getVerifierPublicKey());           
                 hash.put(eidRecord.getDataType(), jo);
             }
 
