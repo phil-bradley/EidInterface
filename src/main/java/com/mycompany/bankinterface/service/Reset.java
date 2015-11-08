@@ -7,8 +7,7 @@ package com.mycompany.bankinterface.service;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -35,31 +34,8 @@ public class Reset extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
-        User user1 = new User("0001", "Bob");
-        User user2 = new User("0002", "Fred");
-        User user3 = new User("0003", "Jack");
-        User user4 = new User("0004", "Tim");
-
-        EidRecord phoneRecord = new EidRecord();
-        phoneRecord.setData("+353 123456");
-        phoneRecord.setDataType("PHONE");
-        phoneRecord.setEid("ABCD1234WXYZ");
-
-        EidRecord passportRecord = new EidRecord();
-        passportRecord.setData("PA123456");
-        passportRecord.setDataType("PASSPORT");
-
-        user1.getEidRecords().add(phoneRecord);
-        user1.getEidRecords().add(passportRecord);
-
-        Map<String, User> users = new HashMap<>();
-
-        users.put(user1.getUserId(), user1);
-        users.put(user2.getUserId(), user2);
-        users.put(user3.getUserId(), user3);
-        users.put(user4.getUserId(), user4);
-
-        getServletContext().setAttribute("users", users);
+        List<User> defaultUsers = (List<User>) getServletContext().getAttribute("defaultUsers");
+        getServletContext().setAttribute("users", defaultUsers);
 
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */

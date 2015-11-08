@@ -48,28 +48,52 @@ public class AppInitialiser implements ServletContextListener {
         }
 
         initTestData();
-        
+
         logger.info("Application initialised");
     }
 
     private void initTestData() {
 
-        User user1 = new User("0001", "Bob");
+        User user1 = new User("0001", "Erikos");
         User user2 = new User("0002", "Fred");
         User user3 = new User("0003", "Jack");
         User user4 = new User("0004", "Tim");
 
-        EidRecord phoneRecord = new EidRecord();
-        phoneRecord.setData("+353 123456");
-        phoneRecord.setDataType("PHONE");
-        phoneRecord.setEid("ABCD1234WXYZ");
-        
-        EidRecord passportRecord = new EidRecord();
-        passportRecord.setData("PA123456");
-        passportRecord.setDataType("PASSPORT");
+        EidRecord fnameRecord = new EidRecord();
+        fnameRecord.setData("Erikos");
+        fnameRecord.setDataType("FIRSTNAME");
+        fnameRecord.setEid("HSKE23445JLLM993");
+        user1.getEidRecords().add(fnameRecord);
 
-        user1.getEidRecords().add(phoneRecord);
+        EidRecord lnameRecord = new EidRecord();
+        lnameRecord.setData("Alkalai");
+        lnameRecord.setDataType("LASTNAME");
+        lnameRecord.setEid("BV73945454DSAA");
+        user1.getEidRecords().add(lnameRecord);
+
+        EidRecord passportRecord = new EidRecord();
+        passportRecord.setData("XX575245");
+        passportRecord.setDataType("PASSPORT");
+        passportRecord.setEid("YTENVP3424222XZW");
         user1.getEidRecords().add(passportRecord);
+
+        EidRecord drivingRecord = new EidRecord();
+        drivingRecord.setData("AA456732");
+        drivingRecord.setDataType("DRIVINGLICENSE");
+        // No EID
+        user1.getEidRecords().add(drivingRecord);
+
+        EidRecord addressRecord = new EidRecord();
+        addressRecord.setData("Van troelaan 42, 4563FF, Amsterdam, The Netherlands");
+        addressRecord.setDataType("ADDRESS");
+        // No EID
+        user1.getEidRecords().add(addressRecord);
+
+        EidRecord dobRecord = new EidRecord();
+        dobRecord.setData("23-05-1985");
+        dobRecord.setDataType("DATEOFBIRTH");
+        dobRecord.setEid("PODRNVJ82345665FG");
+        user1.getEidRecords().add(dobRecord);
 
         Map<String, User> users = new HashMap<>();
 
@@ -79,6 +103,7 @@ public class AppInitialiser implements ServletContextListener {
         users.put(user4.getUserId(), user4);
 
         servletContext.setAttribute("users", users);
+        servletContext.setAttribute("defaultUsers", users);
     }
 
     @Override
