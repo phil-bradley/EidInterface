@@ -8,6 +8,7 @@ package com.mycompany.bankinterface.service;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -34,7 +35,7 @@ public class Reset extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
-        List<User> defaultUsers = (List<User>) getServletContext().getAttribute("defaultUsers");
+        Map<String, User> defaultUsers = (Map<String, User>) getServletContext().getAttribute("defaultUsers");
         getServletContext().setAttribute("users", defaultUsers);
 
         try (PrintWriter out = response.getWriter()) {
